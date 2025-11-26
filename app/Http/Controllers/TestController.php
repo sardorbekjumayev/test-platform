@@ -16,6 +16,7 @@ class TestController extends Controller
         $instance = TestInstance::create([
             'user_id' => Auth::id(),
             'subject_id' => $subjectId,
+            'district' => Auth::user()->district,
             'expires_at' => now()->addMinutes(20),
         ]);
 

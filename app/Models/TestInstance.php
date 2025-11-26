@@ -14,6 +14,7 @@ class TestInstance extends Model
     protected $fillable = [
         'user_id',
         'subject_id',
+        'district',
         'expires_at',
         'score',
     ];

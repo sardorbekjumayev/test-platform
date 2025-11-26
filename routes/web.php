@@ -51,7 +51,12 @@ Route::middleware(['admin'])->group(function () {
 
     Route::delete('/remove-admin/{id}', [UserController::class, 'removeAdmin'])
          ->name('remove-admin');
+
+    Route::get('admin/results', [App\Http\Controllers\Admin\ResultController::class, 'index'])
+         ->name('admin.results.index');
 });
+
+
 
 // Oddiy user
 Route::middleware(['user'])->group(function () {

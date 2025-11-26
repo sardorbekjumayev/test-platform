@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('subject_id')->constrained()->onDelete('cascade');
+            $table->string('district');
             $table->timestamp('expires_at')->nullable(); // masalan 20 daqiqa
             $table->integer('score')->nullable();        // yakuniy natija
             $table->timestamps();

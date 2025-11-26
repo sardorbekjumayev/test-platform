@@ -15,24 +15,24 @@ class RegisterController extends Controller
         return view('auth.register');
     }
 
-    public function register(Request $request)
-    {
-        $request->validate([
-            'fname' => 'required',
-            'lname' => 'required',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:5',
-            'repeatpass' => 'required|same:password',
-        ]);
+public function register(Request $request)
+{
+    $request->validate([
+        'fname'     => 'required|string|max:255',
+        'lname'     => 'required|string|max:255',
+        'email'     => 'required|email|unique:users,email',
+        'district'  => 'required|string',
+        'password'  => 'required|min:6|confirmed', // confirmed avto password_confirmation ni tekshiradi
+    ]);
 
-        // dd($request->all());
-        User::create([
-            'name' => $request->fname . ' ' . $request->lname,
-            'email'=> $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'user',
-        ]);
+    User::create([
+        'name'     => $request->fname . ' ' . $request->lname,
+        'email'    => $request->email,
+        'district' => $request->district,
+        'role'     => 'user',
+        'password' => Hash::make($request->password),
+    ]);
 
-        return redirect('/login')->with('success', 'Registered!');
-    }
+    return redirect('/login')->with('success', 'Roʻyxatdan muvaffaqiyatli oʻtildi!');
+}
 }
