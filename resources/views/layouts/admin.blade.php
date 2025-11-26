@@ -137,6 +137,12 @@
                     <span>Adminlar</span></a>
             </li>
 
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.results.index') }}">
+                    <i class="fas fa-fw fa-chart-bar"></i>
+                    <span>Test Natijalari</span></a>
+            </li>
+
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
 
