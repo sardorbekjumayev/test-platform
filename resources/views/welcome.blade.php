@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AtTT - Buxoro Pedagogik Mahorat Markazi</title>
+    <title>OlisHudud - Buxoro Pedagogik Mahorat Markazi</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
@@ -116,12 +116,11 @@
             </h1>
 
             <p class="lead mb-2" style="font-size: 1.35rem; font-weight: 600;">
-                "Birgalikda yuksalamiz" loyihasi
+                "Birgalikda yuksalamiz"
             </p>
 
             <p class="mb-5" style="font-size: 1.1rem; line-height: 1.7;">
-                <strong>AtTT</strong> — Attestatsiya uchun tayyorgarlik testlari.<br>
-                Kimyo fani bo‘yicha ko‘p modulli, vaqtli mock-testlar va real sharoitga yaqin mashqlar bilan tayyorlaning.
+                Olis hudud maktabining mukammallik sari qadamiga - Pedagogik mahorat markazi ko‘prikdir
             </p>
 
             @auth()
