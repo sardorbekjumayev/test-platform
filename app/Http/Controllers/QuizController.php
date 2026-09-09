@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Quiz;
 use App\Models\Subject;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class QuizController extends Controller
 {
@@ -37,10 +38,8 @@ class QuizController extends Controller
     {
         $request->validate([
             'question' => 'required|string|max:1000',
-            'type' => 'nullable|in:single,multiple',
             'options' => 'required|array|size:4',
             'options.*' => 'required|string|max:255',
-            'correct' => 'required',
         ]);
 
         $type = $request->input('type', 'single');
@@ -59,16 +58,26 @@ class QuizController extends Controller
             $answer = $request->options[$correctIndex] ?? '';
         }
 
-        Quiz::create([
+        $data = [
             'subject_id' => $subject->id,
-            'type' => $type,
             'quiz' => $request->question,
             'option1' => $request->options[0] ?? '',
             'option2' => $request->options[1] ?? '',
             'option3' => $request->options[2] ?? '',
             'option4' => $request->options[3] ?? '',
             'answer' => $answer,
-        ]);
+        ];
+
+        // Agar bazada type ustuni bor bo'lsa uni ham saqlaymiz, bo'lmasa answer ning o'zi yetarli
+        try {
+            if (Schema::hasColumn('quizzes', 'type')) {
+                $data['type'] = $type;
+            }
+        } catch (\Throwable $e) {
+            // DB schema tekshiruvi xato bersa ham davom etadi
+        }
+
+        Quiz::create($data);
 
         return redirect()
             ->route('quizzes.index', $subject->id)
@@ -106,10 +115,8 @@ class QuizController extends Controller
 
         $request->validate([
             'question' => 'required|string|max:1000',
-            'type' => 'nullable|in:single,multiple',
             'options' => 'required|array|size:4',
             'options.*' => 'required|string|max:255',
-            'correct' => 'required',
         ]);
 
         $type = $request->input('type', 'single');
@@ -128,15 +135,24 @@ class QuizController extends Controller
             $answer = $request->options[$correctIndex] ?? '';
         }
 
-        $quiz->update([
-            'type' => $type,
+        $updateData = [
             'quiz' => $request->question,
             'option1' => $request->options[0] ?? '',
             'option2' => $request->options[1] ?? '',
             'option3' => $request->options[2] ?? '',
             'option4' => $request->options[3] ?? '',
             'answer' => $answer,
-        ]);
+        ];
+
+        try {
+            if (Schema::hasColumn('quizzes', 'type')) {
+                $updateData['type'] = $type;
+            }
+        } catch (\Throwable $e) {
+            // DB schema tekshiruvi xato bersa ham davom etadi
+        }
+
+        $quiz->update($updateData);
 
         return redirect()
             ->route('quizzes.index', $subject->id)

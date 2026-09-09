@@ -37,17 +37,44 @@
                         @csrf
                         @method('PUT')
 
-                        <!-- Savol turi -->
+                        @php
+                            $isMultiple = $quiz->isMultiple();
+                            $correctIndexes = $quiz->correct_indexes;
+                        @endphp
+
+                        <!-- Savol turkumi (Tanlash kartalari) -->
                         <div class="mb-4">
-                            <label for="quizType" class="form-label fw-bold">Savol turkumi (turi)</label>
-                            <select name="type" id="quizType" class="form-select form-select-lg @error('type') is-invalid @enderror">
-                                <option value="single" {{ old('type', $quiz->type) == 'single' ? 'selected' : '' }}>
-                                    Bitta to'g'ri javobli (Yagona tanlov - Radio)
-                                </option>
-                                <option value="multiple" {{ old('type', $quiz->type) == 'multiple' ? 'selected' : '' }}>
-                                    Bir nechta to'g'ri javobli (Ko'p tanlovli - Checkbox)
-                                </option>
-                            </select>
+                            <label class="form-label fw-bold fs-5 mb-3">Savol turkumi (turini tanlang):</label>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="card p-3 h-100 border-2 type-card" id="cardSingle" style="cursor: pointer; border-color: {{ !$isMultiple ? '#4e73df' : '#e3e6f0' }}; background-color: {{ !$isMultiple ? '#f8faff' : '#ffffff' }};">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="type" id="typeSingle" value="single" {{ !$isMultiple ? 'checked' : '' }} onchange="handleTypeChange('single')">
+                                            <label class="form-check-label fw-bold text-dark fs-6" for="typeSingle" style="cursor: pointer;">
+                                                <i class="fas fa-dot-circle text-primary me-2"></i> Yagona tanlovli savol
+                                            </label>
+                                            <div class="text-muted small mt-1 ps-4">
+                                                Faqat bitta to‘g‘ri javob belgilanadi (Radio).
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="card p-3 h-100 border-2 type-card" id="cardMultiple" style="cursor: pointer; border-color: {{ $isMultiple ? '#7c3aed' : '#e3e6f0' }}; background-color: {{ $isMultiple ? '#f5f3ff' : '#ffffff' }};">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="type" id="typeMultiple" value="multiple" {{ $isMultiple ? 'checked' : '' }} onchange="handleTypeChange('multiple')">
+                                            <label class="form-check-label fw-bold text-dark fs-6" for="typeMultiple" style="cursor: pointer;">
+                                                <i class="fas fa-check-square text-purple me-2" style="color: #7c3aed;"></i> Ko‘p tanlovli savol (bir nechta javob)
+                                            </label>
+                                            <div class="text-muted small mt-1 ps-4">
+                                                Bir nechta to‘g‘ri javoblarni tanlash mumkin (Checkbox).
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Savol matni -->
@@ -61,30 +88,31 @@
 
                         <!-- Variantlar va To'g'ri javoblar -->
                         <div class="mb-4">
-                            <label class="form-label fw-bold mb-2">Variantlar va To‘g‘ri javob(lar)</label>
-                            <div class="alert alert-light border py-2 px-3 small text-muted mb-3" id="typeHint">
-                                To'g'ri javob deb hisoblagan variantingiz yonidagi doirachani belgilang.
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="form-label fw-bold mb-0">Variantlar va To‘g‘ri javob(lar)</label>
+                                <span class="badge {{ $isMultiple ? 'text-white' : 'bg-primary' }} px-3 py-2" id="hintBadge" style="{{ $isMultiple ? 'background-color: #7c3aed;' : '' }}">
+                                    @if($isMultiple)
+                                        <i class="fas fa-check-double me-1"></i> Bir nechta to‘g‘ri javoblarni katakchalardan belgilang
+                                    @else
+                                        <i class="fas fa-info-circle me-1"></i> Bitta to‘g‘ri javobni belgilang
+                                    @endif
+                                </span>
                             </div>
 
                             @php
                                 $existingOptions = [$quiz->option1, $quiz->option2, $quiz->option3, $quiz->option4];
-                                $correctIndexes = $quiz->correct_indexes;
-                                $oldCorrect = old('correct');
-                                if (!is_null($oldCorrect)) {
-                                    $activeCorrect = is_array($oldCorrect) ? $oldCorrect : [$oldCorrect];
-                                } else {
-                                    $activeCorrect = $correctIndexes;
-                                }
                             @endphp
 
                             @for($i = 0; $i < 4; $i++)
                                 <div class="input-group mb-3">
-                                    <span class="input-group-text bg-white px-3">
-                                        <input type="{{ $quiz->isMultiple() ? 'checkbox' : 'radio' }}" 
-                                               name="{{ $quiz->isMultiple() ? 'correct[]' : 'correct' }}" 
+                                    <span class="input-group-text bg-white px-3" id="wrapper-{{ $i }}">
+                                        <input type="{{ $isMultiple ? 'checkbox' : 'radio' }}" 
+                                               name="{{ $isMultiple ? 'correct[]' : 'correct' }}" 
                                                value="{{ $i }}"
-                                               class="form-check-input correct-input mt-0"
-                                               {{ in_array($i, $activeCorrect) ? 'checked' : '' }}>
+                                               id="input-{{ $i }}"
+                                               class="form-check-input mt-0 answer-check-input"
+                                               style="transform: scale(1.3); cursor: pointer;"
+                                               {{ in_array($i, $correctIndexes) ? 'checked' : '' }}>
                                     </span>
                                     <input type="text" name="options[]"
                                            class="form-control form-control-lg @error("options.$i") is-invalid @enderror"
@@ -95,10 +123,6 @@
                                     @enderror
                                 </div>
                             @endfor
-
-                            @error('correct')
-                                <div class="text-danger small">{{ $message }}</div>
-                            @enderror
                         </div>
 
                         <div class="d-flex gap-3 mt-4">
@@ -118,41 +142,66 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const typeSelect = document.getElementById('quizType');
-    const typeHint = document.getElementById('typeHint');
+function handleTypeChange(type) {
+    const isMultiple = (type === 'multiple');
+    const cardSingle = document.getElementById('cardSingle');
+    const cardMultiple = document.getElementById('cardMultiple');
+    const hintBadge = document.getElementById('hintBadge');
+    const radioSingle = document.getElementById('typeSingle');
+    const radioMultiple = document.getElementById('typeMultiple');
 
-    function updateInputs() {
-        const isMultiple = typeSelect.value === 'multiple';
-        const inputs = document.querySelectorAll('.correct-input');
-
-        if (isMultiple) {
-            typeHint.innerHTML = '<i class="fas fa-info-circle text-primary me-1"></i> Bir yoki bir nechta to‘g‘ri javobni katakchalardan (checkbox) belgilang.';
-            inputs.forEach(input => {
-                input.type = 'checkbox';
-                input.name = 'correct[]';
-            });
-        } else {
-            typeHint.innerHTML = '<i class="fas fa-info-circle text-primary me-1"></i> To‘g‘ri javob deb hisoblagan bitta variantingiz yonidagi doirachani (radio) belgilang.';
-            let checkedFound = false;
-            inputs.forEach((input) => {
-                input.type = 'radio';
-                input.name = 'correct';
-                if (input.checked && !checkedFound) {
-                    checkedFound = true;
-                } else if (checkedFound) {
-                    input.checked = false;
-                }
-            });
-            if (!checkedFound && inputs.length > 0) {
-                inputs[0].checked = true;
-            }
-        }
+    if (isMultiple) {
+        radioMultiple.checked = true;
+        cardMultiple.style.borderColor = '#7c3aed';
+        cardMultiple.style.backgroundColor = '#f5f3ff';
+        cardSingle.style.borderColor = '#e3e6f0';
+        cardSingle.style.backgroundColor = '#ffffff';
+        hintBadge.className = 'badge px-3 py-2 text-white';
+        hintBadge.style.backgroundColor = '#7c3aed';
+        hintBadge.innerHTML = '<i class="fas fa-check-double me-1"></i> Bir nechta to‘g‘ri javoblarni katakchalardan belgilang';
+    } else {
+        radioSingle.checked = true;
+        cardSingle.style.borderColor = '#4e73df';
+        cardSingle.style.backgroundColor = '#f8faff';
+        cardMultiple.style.borderColor = '#e3e6f0';
+        cardMultiple.style.backgroundColor = '#ffffff';
+        hintBadge.className = 'badge bg-primary px-3 py-2';
+        hintBadge.style.backgroundColor = '';
+        hintBadge.innerHTML = '<i class="fas fa-info-circle me-1"></i> Bitta to‘g‘ri javobni belgilang';
     }
 
-    typeSelect.addEventListener('change', updateInputs);
-    // Initial run
-    updateInputs();
+    for (let i = 0; i < 4; i++) {
+        const wrapper = document.getElementById('wrapper-' + i);
+        const oldInput = document.getElementById('input-' + i);
+        const wasChecked = oldInput ? oldInput.checked : false;
+
+        const newInput = document.createElement('input');
+        newInput.id = 'input-' + i;
+        newInput.className = 'form-check-input mt-0 answer-check-input';
+        newInput.style.transform = 'scale(1.3)';
+        newInput.style.cursor = 'pointer';
+        newInput.value = i;
+
+        if (isMultiple) {
+            newInput.type = 'checkbox';
+            newInput.name = 'correct[]';
+            newInput.checked = wasChecked;
+        } else {
+            newInput.type = 'radio';
+            newInput.name = 'correct';
+            newInput.checked = wasChecked;
+        }
+
+        wrapper.innerHTML = '';
+        wrapper.appendChild(newInput);
+    }
+}
+
+document.getElementById('cardSingle').addEventListener('click', function() {
+    handleTypeChange('single');
+});
+document.getElementById('cardMultiple').addEventListener('click', function() {
+    handleTypeChange('multiple');
 });
 </script>
 @endsection

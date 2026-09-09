@@ -28,15 +28,36 @@ class Quiz extends Model
      */
     public function getTypeAttribute($value): string
     {
-        return $value ?? 'single';
+        if (!empty($value)) {
+            return $value;
+        }
+
+        // Agar bazada type ustuni bo'lmasa, answer dan aniqlaymiz
+        return $this->isMultiple() ? 'multiple' : 'single';
     }
 
     /**
-     * Savol ko'p javoblimi (multiple choice)?
+     * Savol bir nechta to'g'ri javoblimi (multiple choice)?
      */
     public function isMultiple(): bool
     {
-        return ($this->type ?? 'single') === 'multiple';
+        // 1. Agar type maydonida 'multiple' bo'lsa
+        if (isset($this->attributes['type']) && $this->attributes['type'] === 'multiple') {
+            return true;
+        }
+
+        // 2. Agar answer JSON array bo'lsa (baza strukturasi o'zgarmagan taqdirda ham)
+        if (!empty($this->answer)) {
+            $trimmed = trim($this->answer);
+            if (str_starts_with($trimmed, '[') && str_ends_with($trimmed, ']')) {
+                $decoded = json_decode($trimmed, true);
+                if (is_array($decoded)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
