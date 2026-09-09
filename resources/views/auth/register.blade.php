@@ -1,122 +1,177 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz">
 
 <head>
-
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <title>Ro'yxatdan o'tish | OlisHudud</title>
 
-    <title>Ro`yhatdan O`tish</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Custom fonts for this template-->
-    <link href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
-    <link
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
+    <!-- Bootstrap 5 & FontAwesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 
-    <!-- Custom styles for this template-->
-    <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background: radial-gradient(circle at 90% 10%, #e0e7ff 0%, #f8fafc 60%, #eef2ff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2.5rem 1rem;
+        }
 
+        .auth-card {
+            background: #ffffff;
+            border-radius: 1.5rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 520px;
+            padding: 2.5rem;
+        }
+
+        .brand-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            margin: 0 auto 1rem;
+            box-shadow: 0 6px 15px rgba(79, 70, 229, 0.35);
+        }
+
+        .form-control, .form-select {
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            border: 1.5px solid #e2e8f0;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+
+        .btn-auth {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0.85rem 1.5rem;
+            font-weight: 700;
+            font-size: 1rem;
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.3);
+            transition: all 0.3s;
+        }
+
+        .btn-auth:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4);
+            color: white;
+        }
+    </style>
 </head>
 
-<body class="bg-gradient-primary">
+<body>
 
-    <div class="container">
-
-        <div class="card o-hidden border-0 shadow-lg my-5">
-            <div class="card-body p-0">
-                <!-- Nested Row within Card Body -->
-                <div class="row">
-                    <div class="col-lg-5 d-none d-lg-block bg-register-image"></div>
-                    <div class="col-lg-7">
-                        <div class="p-5">
-                            <div class="text-center">
-                                <h1 class="h4 text-gray-900 mb-4">Ro`yhatdan o`tish!</h1>
-                            </div>
-<form class="user" action="/register" method="POST">
-    @csrf
-
-    <div class="form-group row">
-        <div class="col-sm-6 mb-3 mb-sm-0">
-            <input type="text" name="fname" class="form-control form-control-user" id="exampleFirstName"
-                   placeholder="Ismingiz" value="{{ old('fname') }}" required>
-            @error('fname') <small class="text-danger">{{ $message }}</small> @enderror
-        </div>
-        <div class="col-sm-6">
-            <input type="text" name="lname" class="form-control form-control-user" id="exampleLastName"
-                   placeholder="Familiyangiz" value="{{ old('lname') }}" required>
-            @error('lname') <small class="text-danger">{{ $message }}</small> @enderror
-        </div>
+<div class="auth-card">
+    <div class="text-center mb-4">
+        <a href="/" class="text-decoration-none">
+            <div class="brand-icon">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <h4 class="fw-bold text-dark mb-1">OlisHudud</h4>
+        </a>
+        <p class="text-muted small">Yangi hisob yaratish uchun formani to‘ldiring</p>
     </div>
 
-    <div class="form-group">
-        <input type="email" name="email" class="form-control form-control-user" id="exampleInputEmail"
-               placeholder="Email manzilingiz" value="{{ old('email') }}" required>
-        @error('email') <small class="text-danger">{{ $message }}</small> @enderror
-    </div>
-
-    <!-- YANGI: Tuman/Shahar tanlash -->
-    <div class="form-group">
-        <select name="district" class="form-control form-control-user" id="districtSelect" required>
-            <option value="" disabled selected>Tuman yoki shaharni tanlang</option>
-            <option value="Buxoro shahar">Buxoro shahar</option>
-            <option value="Kogon shahar">Kogon shahar</option>
-            <option value="Olot tumani">Olot tumani</option>
-            <option value="Buxoro tumani">Buxoro tumani</option>
-            <option value="Vobkent tumani">Vobkent tumani</option>
-            <option value="Gʻijduvon tumani">Gʻijduvon tumani</option>
-            <option value="Jondor tumani">Jondor tumani</option>
-            <option value="Kogon tumani">Kogon tumani</option>
-            <option value="Qorakoʻl tumani">Qorakoʻl tumani</option>
-            <option value="Qorovulbozor tumani">Qorovulbozor tumani</option>
-            <option value="Peshku tumani">Peshku tumani</option>
-            <option value="Romitan tumani">Romitan tumani</option>
-            <option value="Shofirkon tumani">Shofirkon tumani</option>
-        </select>
-        @error('district') <small class="text-danger">{{ $message }}</small> @enderror
-    </div>
-
-    <div class="form-group row">
-        <div class="col-sm-6 mb-3 mb-sm-0">
-            <input type="password" name="password" class="form-control form-control-user"
-                   id="exampleInputPassword" placeholder="Parolingiz" required>
-            @error('password') <small class="text-danger">{{ $message }}</small> @enderror
+    @if($errors->any())
+        <div class="alert alert-danger rounded-3 border-0 small mb-3">
+            <ul class="mb-0 ps-3">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
         </div>
-        <div class="col-sm-6">
-            <input type="password" name="password_confirmation" class="form-control form-control-user"
-                   id="exampleRepeatPassword" placeholder="Parolni tasdiqlang" required>
-        </div>
-    </div>
+    @endif
 
-    <button type="submit" class="btn btn-primary btn-user btn-block mt-4">
-        Ro'yxatdan o'tish
-    </button>
-</form>
-                            <hr>
-                            <div class="text-center">
-                                <a class="small" href="/login">Sizda hisob mavjudmi? Kirish!</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <form action="/register" method="POST">
+        @csrf
+
+        <div class="row g-2 mb-3">
+            <div class="col-sm-6">
+                <label class="form-label small fw-bold text-muted">Ismingiz</label>
+                <input type="text" name="fname" class="form-control" 
+                       placeholder="Ism" value="{{ old('fname') }}" required>
+            </div>
+            <div class="col-sm-6">
+                <label class="form-label small fw-bold text-muted">Familiyangiz</label>
+                <input type="text" name="lname" class="form-control" 
+                       placeholder="Familiya" value="{{ old('lname') }}" required>
             </div>
         </div>
 
+        <div class="mb-3">
+            <label class="form-label small fw-bold text-muted">Email manzili</label>
+            <input type="email" name="email" class="form-control" 
+                   placeholder="pochta@misol.uz" value="{{ old('email') }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label small fw-bold text-muted">Tuman yoki shahar</label>
+            <select name="district" class="form-select" required>
+                <option value="" disabled selected>Tanlang...</option>
+                <option value="Buxoro shahar">Buxoro shahar</option>
+                <option value="Kogon shahar">Kogon shahar</option>
+                <option value="Olot tumani">Olot tumani</option>
+                <option value="Buxoro tumani">Buxoro tumani</option>
+                <option value="Vobkent tumani">Vobkent tumani</option>
+                <option value="Gʻijduvon tumani">Gʻijduvon tumani</option>
+                <option value="Jondor tumani">Jondor tumani</option>
+                <option value="Kogon tumani">Kogon tumani</option>
+                <option value="Qorakoʻl tumani">Qorakoʻl tumani</option>
+                <option value="Qorovulbozor tumani">Qorovulbozor tumani</option>
+                <option value="Peshku tumani">Peshku tumani</option>
+                <option value="Romitan tumani">Romitan tumani</option>
+                <option value="Shofirkon tumani">Shofirkon tumani</option>
+            </select>
+        </div>
+
+        <div class="row g-2 mb-4">
+            <div class="col-sm-6">
+                <label class="form-label small fw-bold text-muted">Parol</label>
+                <input type="password" name="password" class="form-control" 
+                       placeholder="••••••••" required>
+            </div>
+            <div class="col-sm-6">
+                <label class="form-label small fw-bold text-muted">Parolni tasdiqlang</label>
+                <input type="password" name="password_confirmation" class="form-control" 
+                       placeholder="••••••••" required>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-auth w-100 mb-3">
+            Ro'yxatdan o'tish <i class="fas fa-arrow-right ms-1"></i>
+        </button>
+    </form>
+
+    <div class="text-center pt-3 border-top">
+        <span class="text-muted small">Hisobingiz bormi?</span>
+        <a href="/login" class="text-primary small fw-bold text-decoration-none ms-1">Kirish</a>
     </div>
+</div>
 
-    <!-- Bootstrap core JavaScript-->
-    <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
-    <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-
-    <!-- Core plugin JavaScript-->
-    <script src="{{ asset('vendor/jquery-easing/jquery.easing.min.js') }}"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

@@ -1,163 +1,166 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz">
 
 <head>
-
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <title>Kirish | OlisHudud</title>
 
-    <title>Kirish</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Custom fonts for this template-->
-    <link href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
-    <link
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
-
-    <!-- Custom styles for this template-->
-    <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
+    <!-- Bootstrap 5 & FontAwesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 
     <style>
-.alert {
-    border: none;
-    border-radius: 12px;
-    font-size: 0.95rem;
-}
-.alert-success {
-    background: linear-gradient(135deg, #d4edda, #c8e6c9) !important;
-    color: #155724;
-}
-.alert-danger {
-    background: linear-gradient(135deg, #f8d7da, #f5c6cb) !important;
-    color: #721c24;
-}
-.form-control.is-invalid {
-    border-color: 2px solid #e74a3b;
-}
-</style>
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background: radial-gradient(circle at 10% 20%, #e0e7ff 0%, #f8fafc 60%, #eef2ff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
 
+        .auth-card {
+            background: #ffffff;
+            border-radius: 1.5rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 440px;
+            padding: 2.5rem;
+        }
+
+        .brand-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            margin: 0 auto 1rem;
+            box-shadow: 0 6px 15px rgba(79, 70, 229, 0.35);
+        }
+
+        .form-control {
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            border: 1.5px solid #e2e8f0;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+
+        .btn-auth {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0.85rem 1.5rem;
+            font-weight: 700;
+            font-size: 1rem;
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.3);
+            transition: all 0.3s;
+        }
+
+        .btn-auth:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4);
+            color: white;
+        }
+    </style>
 </head>
 
-<body class="bg-gradient-primary">
+<body>
 
-<div class="container">
-    <!-- Outer Row -->
-    <div class="row justify-content-center">
-        <div class="col-xl-10 col-lg-12 col-md-9">
-            <div class="card o-hidden border-0 shadow-lg my-5">
-                <div class="card-body p-0">
-                    <!-- Nested Row within Card Body -->
-                    <div class="row">
-                        <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
-                        <div class="col-lg-6">
-                            <div class="p-5">
+<div class="auth-card">
+    <div class="text-center mb-4">
+        <a href="/" class="text-decoration-none">
+            <div class="brand-icon">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <h4 class="fw-bold text-dark mb-1">OlisHudud</h4>
+        </a>
+        <p class="text-muted small">Tizimga kirish uchun ma'lumotlaringizni kiriting</p>
+    </div>
 
-                                <div class="text-center">
-                                    <h1 class="h4 text-gray-900 mb-4">Kirish!</h1>
-                                </div>
+    <!-- Xabarlar -->
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show rounded-3 border-0 small">
+            <i class="fas fa-check-circle me-1"></i> {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
 
-                                <!-- SUCCESS MESSAGE -->
-                                @if(session('success'))
-                                    <div class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm" role="alert">
-                                        <i class="fas fa-check-circle me-2"></i>
-                                        <strong>Muvaffaqiyat!</strong> {{ session('success') }}
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                    </div>
-                                @endif
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show rounded-3 border-0 small">
+            <i class="fas fa-exclamation-triangle me-1"></i> {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
 
-                                <!-- ERROR MESSAGE (umumiy xato) -->
-                                @if(session('error'))
-                                    <div class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm" role="alert">
-                                        <i class="fas fa-exclamation-triangle me-2"></i>
-                                        <strong>Xato!</strong> {{ session('error') }}
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                    </div>
-                                @endif
+    @if($errors->any())
+        <div class="alert alert-danger rounded-3 border-0 small">
+            <ul class="mb-0 ps-3">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-                                <!-- VALIDATION XATOLAR (email yoki parol noto‘g‘ri bo‘lsa) -->
-                                @if($errors->any())
-                                    <div class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm" role="alert">
-                                        <i class="fas fa-times-circle me-2"></i>
-                                        <strong>Iltimos, quyidagi xatolarni tuzating:</strong>
-                                        <ul class="mt-2 mb-0 ps-4">
-                                            @foreach($errors->all() as $error)
-                                                <li>{{ $error }}</li>
-                                            @endforeach
-                                        </ul>
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                    </div>
-                                @endif
+    <form action="/login" method="POST">
+        @csrf
 
-                                <!-- Login Form -->
-                                <form class="user" action="/login" method="POST">
-                                    @csrf
-
-                                    <div class="form-group mb-3">
-                                        <input type="email" 
-                                               name="email" 
-                                               class="form-control form-control-user @error('email') is-invalid @enderror"
-                                               id="exampleInputEmail" 
-                                               aria-describedby="emailHelp"
-                                               placeholder="Email manzilingizni kiriting..."
-                                               value="{{ old('email') }}"
-                                               required>
-                                        @error('email')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-
-                                    <div class="form-group mb-3">
-                                        <input type="password" 
-                                               name="password" 
-                                               class="form-control form-control-user @error('password') is-invalid @enderror"
-                                               id="exampleInputPassword" 
-                                               placeholder="Parolingizni kiriting..."
-                                               required>
-                                        @error('password')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-
-                                    <div class="form-group mb-4">
-                                        <div class="custom-control custom-checkbox small">
-                                            <input type="checkbox" class="custom-control-input" id="customCheck" name="remember">
-                                            <label class="custom-control-label" for="customCheck">Eslab qolish</label>
-                                        </div>
-                                    </div>
-
-                                    <button type="submit" class="btn btn-primary btn-user btn-block">
-                                        Kirish
-                                    </button>
-                                </form>
-
-                                <hr>
-
-                                <div class="text-center">
-                                    <a class="small" href="/register">Hisob yaratish!</a>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <div class="mb-3">
+            <label for="email" class="form-label small fw-bold text-muted">Email manzili</label>
+            <div class="input-group">
+                <input type="email" name="email" id="email" 
+                       class="form-control @error('email') is-invalid @enderror" 
+                       placeholder="pochta@misol.uz" 
+                       value="{{ old('email') }}" required autofocus>
             </div>
         </div>
+
+        <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <label for="password" class="form-label small fw-bold text-muted mb-0">Parol</label>
+            </div>
+            <input type="password" name="password" id="password" 
+                   class="form-control @error('password') is-invalid @enderror" 
+                   placeholder="••••••••" required>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="form-check small">
+                <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                <label class="form-check-label text-muted" for="remember">Eslab qolish</label>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-auth w-100 mb-3">
+            Kirish <i class="fas fa-arrow-right ms-1"></i>
+        </button>
+    </form>
+
+    <div class="text-center pt-3 border-top">
+        <span class="text-muted small">Hisobingiz yo‘qmi?</span>
+        <a href="/register" class="text-primary small fw-bold text-decoration-none ms-1">Ro'yxatdan o'tish</a>
     </div>
 </div>
 
-    <!-- Bootstrap core JavaScript-->
-    <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
-    <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-
-    <!-- Core plugin JavaScript-->
-    <script src="{{ asset('vendor/jquery-easing/jquery.easing.min.js') }}"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

@@ -1,185 +1,162 @@
-{{-- resources/views/results/index.blade.php --}}
 <!DOCTYPE html>
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mening natijalarim</title>
+    <title>Mening test natijalarim | OlisHudud</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 & FontAwesome -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
     <style>
         body {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
             min-height: 100vh;
-            font-family: 'Segoe UI', sans-serif;
-            padding: 2rem 0;
         }
-        .page-title {
-            text-align: center;
-            color: white;
-            margin-bottom: 2.5rem;
+
+        .user-nav {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0.85rem 0;
         }
-        .results-container {
-            max-width: 850px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
+
         .result-card {
-            background: white;
-            border-radius: 1.5rem;
+            background: #ffffff;
+            border-radius: 1.25rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 15px -2px rgba(0, 0, 0, 0.04);
+            margin-bottom: 1.25rem;
             overflow: hidden;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 12px 35px rgba(0,0,0,0.18);
-            transition: all 0.35s ease;
+            transition: all 0.25s ease;
         }
+
         .result-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 25px 60px rgba(99,102,241,0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.08);
+            border-color: #cbd5e1;
         }
-        .card-header {
-            padding: 1.5rem 2rem;
-            color: white;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .score-display {
-            font-size: 2.6rem;
-            font-weight: 900;
-        }
-        .subject-name {
-            font-size: 1.4rem;
-        }
-        .card-body {
-            padding: 1.5rem 2rem;
-            background: #f8fafc;
-        }
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.8rem;
-            font-size: 1rem;
-        }
-        .label {
-            color: #64748b;
-        }
-        .value {
-            font-weight: 600;
-        }
+
         .progress {
-            height: 14px;
+            height: 8px;
             border-radius: 50px;
             background: #e2e8f0;
-            overflow: hidden;
-        }
-        .progress-bar {
-            border-radius: 50px;
-            transition: width 1.2s ease;
-        }
-        .null-score {
-            color: #94a3b8;
-            font-style: italic;
         }
     </style>
 </head>
 <body>
 
-<div class="container-fluid">
-    <h1 class="page-title display-5 fw-bold">
-        Mening natijalarim
-    </h1>
-
-    <div class="results-container">
-
-@foreach ($results as $result)
-    @php
-        $isCompleted = $result->score !== null;
-        $score = $isCompleted ? $result->score : 0;
-        $totalQuestions = 20; // agar boshqa bo‘lsa o‘zgartiring
-        $percentage = $isCompleted ? round(($score / $totalQuestions) * 100, 1) : 0;
-
-        // Rangni ballga qarab belgilash
-        if ($percentage >= 80) {
-            $headerColor = 'linear-gradient(135deg, #10b981, #34d399)'; // yashil
-            $progressColor = 'bg-success';
-        } elseif ($percentage >= 60) {
-            $headerColor = 'linear-gradient(135deg, #f59e0b, #fbbf24)'; // sariq
-            $progressColor = 'bg-warning';
-        } else {
-            $headerColor = 'linear-gradient(135deg, #ef4444, #f87171)'; // qizil
-            $progressColor = 'bg-danger';
-        }
-    @endphp
-
-    <div class="result-card">
-        @if (!$isCompleted)
-            <!-- Yakunlanmagan test -->
-            <div class="card-header" style="background: linear-gradient(135deg, #94a3b8, #cbd5e1);">
-                <div class="subject-name">{{ $result->subject->name }}</div>
-                <div class="score-display null-score">Test tugallanmagan</div>
+<!-- Navbar -->
+<nav class="user-nav sticky-top">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a href="{{ route('user.dashboard') }}" class="d-flex align-items-center gap-2 text-decoration-none text-dark fw-bold fs-5">
+            <div class="p-2 rounded-3 text-white" style="background: linear-gradient(135deg, #4f46e5, #7c3aed);">
+                <i class="fas fa-arrow-left"></i>
             </div>
-            <div class="card-body">
-                <div class="info-row">
-                    <span class="label">Boshlangan vaqti:</span>
-                    <span class="value">{{ $result->created_at->format('d.m.Y H:i') }}</span>
+            <span>Bosh sahifaga qaytish</span>
+        </a>
+
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">
+                <i class="fas fa-user-graduate me-1 text-primary"></i> {{ auth()->user()->name }}
+            </span>
+        </div>
+    </div>
+</nav>
+
+<div class="container py-5" style="max-width: 900px;">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold mb-2">Mening test natijalarim</h2>
+        <p class="text-muted">Barcha topshirilgan testlar tarixi va ularning batafsil tahlili</p>
+    </div>
+
+    @forelse ($results as $result)
+        @php
+            $isCompleted = $result->score !== null;
+            $score = $isCompleted ? $result->score : 0;
+            $totalQuestions = $result->questions()->count() ?: 20;
+            $percentage = $isCompleted ? round(($score / $totalQuestions) * 100, 1) : 0;
+
+            if ($percentage >= 80) {
+                $statusBadge = 'bg-success-subtle text-success border border-success-subtle';
+                $progressBar = 'bg-success';
+                $statusText = 'A\'lo natija';
+            } elseif ($percentage >= 60) {
+                $statusBadge = 'bg-warning-subtle text-warning border border-warning-subtle';
+                $progressBar = 'bg-warning';
+                $statusText = 'Yaxshi natija';
+            } else {
+                $statusBadge = 'bg-danger-subtle text-danger border border-danger-subtle';
+                $progressBar = 'bg-danger';
+                $statusText = 'Qayta tayyorgarlik kerak';
+            }
+        @endphp
+
+        <div class="result-card p-4">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-3">
+                <div>
+                    <h5 class="fw-bold mb-1 text-dark">{{ $result->subject->name ?? 'Fan' }}</h5>
+                    <small class="text-muted">
+                        <i class="fas fa-calendar-alt me-1"></i> {{ $result->created_at->format('d.m.Y H:i') }} da topshirilgan
+                    </small>
                 </div>
-                <div class="info-row">
-                    <span class="label">Tugagan vaqti:</span>
-                    <span class="value">—</span>
+
+                @if($isCompleted)
+                    <div class="text-sm-end">
+                        <span class="fs-4 fw-bold text-primary">{{ $score }}</span>
+                        <span class="text-muted fs-6">/ {{ $totalQuestions }} ball</span>
+                        <div>
+                            <span class="badge {{ $statusBadge }} rounded-pill px-3 py-1">{{ $statusText }} ({{ $percentage }}%)</span>
+                        </div>
+                    </div>
+                @else
+                    <span class="badge bg-secondary-subtle text-secondary border px-3 py-2 rounded-pill">
+                        Tugallanmagan
+                    </span>
+                @endif
+            </div>
+
+            @if($isCompleted)
+                <div class="progress mb-3">
+                    <div class="progress-bar {{ $progressBar }}" style="width: {{ $percentage }}%"></div>
                 </div>
-                <div class="info-row">
-                    <span class="label">Holati:</span>
-                    <span class="value text-muted">Test boshlangan, lekin yakunlanmagan</span>
-                </div>
-                <div class="mt-3 text-end">
-                    <a href="" 
-                       class="btn btn-outline-primary btn-sm rounded-pill px-4">
-                        Davom ettirish
+
+                <div class="d-flex justify-content-between align-items-center pt-2">
+                    <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i> {{ $result->district }}</small>
+                    <a href="{{ route('results.show', $result->id) }}" class="btn btn-sm btn-primary rounded-pill px-4">
+                        Tahlilni ko'rish <i class="fas fa-arrow-right ms-1"></i>
                     </a>
                 </div>
+            @else
+                <div class="d-flex justify-content-end pt-2">
+                    <a href="{{ route('user.test.show', $result->id) }}" class="btn btn-sm btn-outline-primary rounded-pill px-4">
+                        Davom ettirish <i class="fas fa-play ms-1"></i>
+                    </a>
+                </div>
+            @endif
+        </div>
+    @empty
+        <div class="text-center py-5">
+            <div class="p-4 rounded-circle bg-light d-inline-flex mb-3">
+                <i class="fas fa-clipboard-list fa-3x text-muted opacity-50"></i>
             </div>
-        @else
-            <!-- Tugallangan test -->
-            <div class="card-header" style="background: {{ $headerColor }};">
-                <div class="subject-name">{{ $result->subject->name }}</div>
-                <div class="score-display">{{ $score }}/{{ $totalQuestions }}</div>
-            </div>
-            <div class="card-body">
-                <div class="info-row">
-                    <span class="label">Boshlangan vaqti:</span>
-                    <span class="value">{{ $result->created_at->format('d.m.Y H:i') }}</span>
-                </div>
-                <div class="info-row">
-                    <span class="label">Tugallangan vaqti:</span>
-                    <span class="value">{{ $result->expires_at?->format('d.m.Y H:i') ?? $result->updated_at->format('d.m.Y H:i') }}</span>
-                </div>
-                <div class="info-row">
-                    <span class="label">Muvaffaqiyat:</span>
-                    <span class="value fw-bold {{ $percentage >= 80 ? 'text-success' : ($percentage >= 60 ? 'text-warning' : 'text-danger') }}">
-                        {{ $percentage }}%
-                    </span>
-                </div>
-                <div class="progress mt-3">
-                    <div class="progress-bar {{ $progressColor }}" style="width: {{ $percentage }}%"></div>
-                </div>
-                <div class="mt-3 text-end">
-<a href="{{ route('results.show', $result->id) }}" 
-   class="btn btn-outline-primary btn-sm rounded-pill px-4">
-    Batafsil tahlil
-</a>
-                </div>
-            </div>
-        @endif
-    </div>
-@endforeach
-
-
-
-  
-
-    </div>
+            <h5 class="fw-bold">Hozircha natijalar yo'q</h5>
+            <p class="text-muted small mb-4">Siz hali birorta ham fan bo'yicha test topshirmagansiz.</p>
+            <a href="{{ route('user.dashboard') }}" class="btn btn-primary rounded-pill px-4">
+                Test boshlash
+            </a>
+        </div>
+    @endforelse
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
