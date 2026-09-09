@@ -35,4 +35,21 @@ class TestInstanceQuestion extends Model
     {
         return $this->belongsTo(Quiz::class, 'quiz_id');
     }
+
+    /**
+     * Foydalanuvchi bergan javoblarini massiv sifatida olish
+     */
+    public function getUserAnswersAttribute(): array
+    {
+        if (empty($this->user_answer)) {
+            return [];
+        }
+
+        $decoded = json_decode($this->user_answer, true);
+        if (is_array($decoded)) {
+            return $decoded;
+        }
+
+        return [$this->user_answer];
+    }
 }

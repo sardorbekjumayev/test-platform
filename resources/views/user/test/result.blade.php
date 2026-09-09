@@ -43,11 +43,6 @@
             position: relative;
             overflow: hidden;
             color: white;
-            background: linear-gradient(135deg,
-                @if($testInstance->score >= 26) #10b981, #34d399
-                @elseif($testInstance->score >= 20) #f59e0b, #fbbf24
-                @else #ef4444, #f87171 @endif
-            );
         }
         .result-header::after {
             content: '';
@@ -142,18 +137,6 @@
             margin: 0.8rem 0;
             font-size: 1.1rem;
         }
-        .icon-check, .icon-cross {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
-            color: white;
-        }
-        .icon-check { background: #10b981; }
-        .icon-cross { background: #ef4444; }
         .btn-home {
             background: linear-gradient(135deg, #6366f1, #8b5cf6);
             border: none;
@@ -164,10 +147,13 @@
             color: white;
             box-shadow: 0 12px 35px rgba(99,102,241,0.4);
             transition: all 0.4s;
+            text-decoration: none;
+            display: inline-block;
         }
         .btn-home:hover {
             transform: translateY(-6px);
             box-shadow: 0 20px 50px rgba(99,102,241,0.5);
+            color: white;
         }
         .confetti {
             position: fixed;
@@ -179,8 +165,13 @@
 </head>
 <body>
 
-<!-- Konfeti faqat 26+ ball uchun -->
-@if($testInstance->score >= 26)
+@php
+    $totalCount = $details->count() > 0 ? $details->count() : 1;
+    $percentage = round(($testInstance->score / $totalCount) * 100, 1);
+@endphp
+
+<!-- Konfeti faqat 80%+ natija uchun -->
+@if($percentage >= 80)
 <div class="confetti" id="confetti"></div>
 @endif
 
@@ -188,20 +179,24 @@
     <div class="result-card">
 
         <!-- Natija sarlavhasi -->
-        <div class="result-header">
+        <div class="result-header" style="background: linear-gradient(135deg,
+            @if($percentage >= 80) #10b981, #34d399
+            @elseif($percentage >= 60) #f59e0b, #fbbf24
+            @else #ef4444, #f87171 @endif
+        );">
             <div class="score-display">
                 <div class="score-big">{{ $testInstance->score }}</div>
-                <div class="score-total">/ 30</div>
+                <div class="score-total">/ {{ $totalCount }}</div>
             </div>
 
             <h1 class="display-5 fw-bold mb-3">
-                @if($testInstance->score >= 28)
+                @if($percentage >= 90)
                     Sertifikatga loyiq natija!
-                @elseif($testInstance->score >= 26)
+                @elseif($percentage >= 80)
                     Ajoyib! Siz zo‘rsiz!
-                @elseif($testInstance->score >= 22)
+                @elseif($percentage >= 60)
                     Juda yaxshi ish!
-                @elseif($testInstance->score >= 18)
+                @elseif($percentage >= 40)
                     Yaxshi, lekin yaxshiroq bo‘lishi mumkin
                 @else
                     Yana urinib ko‘ring!
@@ -209,52 +204,68 @@
             </h1>
 
             <div class="result-badge">
-                {{ number_format($testInstance->score / 30 * 100, 1) }}% muvaffaqiyat
+                {{ $percentage }}% muvaffaqiyat
             </div>
         </div>
 
         <!-- Javoblar tahlili -->
-        <div class="p-5">
+        <div class="p-4 p-md-5">
             <h2 class="analysis-title">
                 Javoblar tahlili
             </h2>
 
             <div class="row g-4">
                 @foreach($details as $index => $item)
+                @php
+                    $isMultiple = $item->quiz && $item->quiz->isMultiple();
+                    $correctAnswers = $item->quiz ? $item->quiz->correct_answers : [];
+                    $userAnswers = $item->user_answers;
+                @endphp
                 <div class="col-lg-6">
-                    <div class="question-item {{ ($item['user_answer'] == $item['quiz']['answer']) ? 'correct' : 'wrong' }}"
-                         style="animation-delay: {{ $index * 0.1 }}s">
+                    <div class="question-item {{ $item->is_correct ? 'correct' : 'wrong' }}"
+                         style="animation-delay: {{ $index * 0.05 }}s">
                         <div class="d-flex align-items-start gap-3">
-                            <div class="question-number {{ ($item['user_answer'] == $item['quiz']['answer']) ? 'bg-success' : 'bg-danger' }}">
+                            <div class="question-number {{ $item->is_correct ? 'bg-success' : 'bg-danger' }}">
                                 {{ $loop->iteration }}
                             </div>
                             <div class="flex-grow-1">
-                                <strong class="d-block mb-3">
-                                    {{ Str::limit($item['quiz']['quiz'], 100) }}
+                                <strong class="d-block mb-2">
+                                    {{ Str::limit($item->quiz->quiz ?? 'Savol', 120) }}
                                 </strong>
 
+                                @if($isMultiple)
+                                    <span class="badge mb-2 text-white" style="background-color: #7c3aed;">
+                                        <i class="fas fa-check-double me-1"></i> Ko'p tanlovli
+                                    </span>
+                                @endif
+
                                 <div class="answer-row">
-                                            <!-- <i class="fas fa-check-circle text-success fs-4"></i> -->
                                     <div>
-                                        <small class="text-muted">To‘g‘ri javob:</small><br>
-                                        <span class="fw-bold text-success">{{ $item['quiz']['answer'] }}</span>
+                                        <small class="text-muted">To‘g‘ri javob(lar):</small><br>
+                                        <span class="fw-bold text-success">
+                                            @if(!empty($correctAnswers))
+                                                {{ implode(', ', $correctAnswers) }}
+                                            @else
+                                                -
+                                            @endif
+                                        </span>
                                     </div>
                                 </div>
 
                                 <div class="answer-row">
-@if($item['user_answer'] == $item['quiz']['answer'])
-    
-        <i class="fas fa-check-circle text-success fs-4"></i>
-    
-@else
-    
-        <i class="fas fa-times-circle text-danger fs-4"></i>
-    
-@endif
+                                    @if($item->is_correct)
+                                        <i class="fas fa-check-circle text-success fs-4"></i>
+                                    @else
+                                        <i class="fas fa-times-circle text-danger fs-4"></i>
+                                    @endif
                                     <div>
                                         <small class="text-muted">Sizning javobingiz:</small><br>
-                                        <span class="fw-bold {{ ($item['user_answer'] == $item['quiz']['answer']) ? 'text-success' : 'text-danger' }}">
-                                            {{ $item['user_answer'] ?? '— (javob berilmagan)' }}
+                                        <span class="fw-bold {{ $item->is_correct ? 'text-success' : 'text-danger' }}">
+                                            @if(!empty($userAnswers))
+                                                {{ implode(', ', $userAnswers) }}
+                                            @else
+                                                — (javob berilmagan)
+                                            @endif
                                         </span>
                                     </div>
                                 </div>
@@ -266,8 +277,8 @@
             </div>
 
             <div class="text-center mt-5">
-                <a href="{{ route('subjects.index') }}" class="btn btn-home">
-                    Bosh sahifaga qaytish
+                <a href="{{ route('user.dashboard') }}" class="btn btn-home">
+                    <i class="fas fa-home me-2"></i> Bosh sahifaga qaytish
                 </a>
             </div>
         </div>
@@ -277,8 +288,8 @@
 <!-- Konfeti effekti -->
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 <script>
-    @if($testInstance->score >= 26)
-    const duration = 6 * 1000;
+    @if($percentage >= 80)
+    const duration = 5 * 1000;
     const animationEnd = Date.now() + duration;
     const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
 

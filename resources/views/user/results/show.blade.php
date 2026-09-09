@@ -86,78 +86,105 @@
             font-weight: 700;
             color: white;
             box-shadow: 0 10px 30px rgba(99,102,241,0.4);
+            text-decoration: none;
+            display: inline-block;
         }
         .btn-home:hover {
             transform: translateY(-5px);
             box-shadow: 0 20px 40px rgba(99,102,241,0.5);
+            color: white;
         }
     </style>
 </head>
 <body>
+
+@php
+    $totalQuestions = $questions->count() > 0 ? $questions->count() : 1;
+    $percentage = round(($testInstance->score / $totalQuestions) * 100, 1);
+@endphp
 
 <div class="container">
     <div class="result-card">
 
         <!-- Umumiy natija -->
         <div class="header position-relative" style="background: linear-gradient(135deg,
-            {{ $testInstance->score >= 16 ? '#10b981' : ($testInstance->score >= 12 ? '#f59e0b' : '#ef4444') }},
-            {{ $testInstance->score >= 16 ? '#34d399' : ($testInstance->score >= 12 ? '#fbbf24' : '#f87171') }});">
+            {{ $percentage >= 80 ? '#10b981' : ($percentage >= 60 ? '#f59e0b' : '#ef4444') }},
+            {{ $percentage >= 80 ? '#34d399' : ($percentage >= 60 ? '#fbbf24' : '#f87171') }});">
             <div class="score-circle">
                 <div class="score-big">{{ $testInstance->score }}</div>
-                <div style="font-size: 1.4rem;">/ 20</div>
+                <div style="font-size: 1.4rem;">/ {{ $totalQuestions }}</div>
             </div>
             <h1 class="display-5 fw-bold mb-2">
                 {{ $testInstance->subject->name }}
             </h1>
             <p class="lead opacity-90">
-                {{ $testInstance->created_at->format('d.m.Y H:i') }} da boshlangan
+                {{ $testInstance->created_at->format('d.m.Y H:i') }} da topshirilgan
             </p>
             <div class="badge bg-white text-dark fs-5 px-4 py-2 rounded-pill">
-                {{ number_format($testInstance->score / 20 * 100, 1) }}% muvaffaqiyat
+                {{ $percentage }}% muvaffaqiyat
             </div>
         </div>
 
         <!-- Savollar tahlili -->
-        <div class="p-5">
+        <div class="p-4 p-md-5">
             <h3 class="text-center mb-5 text-primary fw-bold">
                 Javoblar tahlili ({{ $questions->count() }} ta savol)
             </h3>
 
             <div class="row g-4">
                 @foreach($questions as $index => $q)
+                @php
+                    $isMultiple = $q->quiz && $q->quiz->isMultiple();
+                    $correctAnswers = $q->quiz ? $q->quiz->correct_answers : [];
+                    $userAnswers = $q->user_answers;
+                @endphp
                 <div class="col-lg-6">
                     <div class="question-item {{ $q->is_correct ? 'correct' : 'wrong' }}"
-                         style="animation-delay: {{ $index * 0.1 }}s;">
-                        <div class="d-flex align-items-start gap-4">
+                         style="animation-delay: {{ $index * 0.05 }}s;">
+                        <div class="d-flex align-items-start gap-3">
                             <!-- Ikonka -->
                             <div class="icon {{ $q->is_correct ? 'bg-success' : 'bg-danger' }}">
-                                {{ $q->is_correct ? 'Check' : 'Cross' }}
+                                <i class="fas {{ $q->is_correct ? 'fa-check' : 'fa-times' }}"></i>
                             </div>
 
                             <div class="flex-grow-1">
-                                <strong class="d-block mb-3">
-                                    {{ $loop->iteration }}. {{ $q->quiz->question }}
+                                <strong class="d-block mb-2">
+                                    {{ $loop->iteration }}. {{ $q->quiz->quiz ?? 'Savol' }}
                                 </strong>
 
-                                <div class="row g-3">
-                                    <div class="col-sm-6">
-                                        <small class="text-muted d-block">Sizning javobingiz:</small>
-                                        <span class="fw-bold {{ $q->is_correct ? 'text-success' : 'text-danger' }}">
-                                            {{ $q->user_answer ?? '— (javob berilmagan)' }}
+                                @if($isMultiple)
+                                    <span class="badge mb-2 text-white" style="background-color: #7c3aed;">
+                                        <i class="fas fa-check-double me-1"></i> Ko'p tanlovli
+                                    </span>
+                                @endif
+
+                                <div class="row g-2 mb-2">
+                                    <div class="col-12">
+                                        <small class="text-muted d-block">To‘g‘ri javob(lar):</small>
+                                        <span class="fw-bold text-success">
+                                            @if(!empty($correctAnswers))
+                                                {{ implode(', ', $correctAnswers) }}
+                                            @else
+                                                -
+                                            @endif
                                         </span>
                                     </div>
-                                    <div class="col-sm-6">
-                                        <small class="text-muted d-block">To‘g‘ri javob:</small>
-                                        <span class="fw-bold text-success">
-                                            {{ $q->quiz->correct_answer }}
+                                    <div class="col-12">
+                                        <small class="text-muted d-block">Sizning javobingiz:</small>
+                                        <span class="fw-bold {{ $q->is_correct ? 'text-success' : 'text-danger' }}">
+                                            @if(!empty($userAnswers))
+                                                {{ implode(', ', $userAnswers) }}
+                                            @else
+                                                — (javob berilmagan)
+                                            @endif
                                         </span>
                                     </div>
                                 </div>
 
-                                @if(!$q->is_correct && $q->user_answer)
-                                <div class="mt-3 p-3 bg-white rounded-3 border">
+                                @if(!$q->is_correct && !empty($userAnswers))
+                                <div class="mt-2 p-2 bg-white rounded-3 border">
                                     <small class="text-danger">
-                                        Xato javob berilgan
+                                        <i class="fas fa-exclamation-circle me-1"></i> Xato javob berilgan
                                     </small>
                                 </div>
                                 @endif
@@ -170,8 +197,8 @@
 
             <!-- Orqaga -->
             <div class="text-center mt-5">
-                <a href="" class="btn btn-home">
-                    Barcha natijalarga qaytish
+                <a href="{{ route('results.index') }}" class="btn btn-home">
+                    <i class="fas fa-arrow-left me-2"></i> Barcha natijalarga qaytish
                 </a>
             </div>
         </div>

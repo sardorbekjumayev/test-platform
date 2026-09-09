@@ -59,6 +59,7 @@
         .progress-bar {
             background: linear-gradient(90deg, #10b981, #34d399);
             border-radius: 50px;
+            transition: width 0.3s ease;
         }
         .question-card {
             padding: 2rem;
@@ -92,17 +93,18 @@
         .option-label:hover {
             border-color: var(--primary);
             background: #eef2ff;
-            transform: translateY(-4px);
-            box-shadow: 0 10px 25px rgba(99,102,241,0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99,102,241,0.12);
         }
-        .option-label input[type="radio"] {
-            margin-right: 1rem;
+        .option-label input[type="radio"],
+        .option-label input[type="checkbox"] {
+            margin-right: 0.75rem;
             transform: scale(1.3);
         }
         .option-label:has(input:checked) {
             background: #eef2ff;
             border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(99,102,241,0.2);
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
         }
         .btn-finish {
             background: linear-gradient(135deg, #10b981, #34d399);
@@ -116,8 +118,16 @@
             transition: all 0.3s;
         }
         .btn-finish:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(16,185,129,0.5);
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(16,185,129,0.5);
+        }
+        .badge-multiple {
+            background: #7c3aed;
+            color: white;
+            font-size: 0.85rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 50px;
+            display: inline-block;
         }
         @media (max-width: 768px) {
             .test-title { font-size: 1.6rem; }
@@ -136,7 +146,7 @@
                 <i class="fas fa-graduation-cap me-3"></i>
                 {{ $testInstance->subject->name }}
             </h1>
-            <div class="timer" id="countdown">30:00</div>
+            <div class="timer" id="countdown">20:00</div>
             <div class="mt-3">
                 <div class="progress">
                     <div class="progress-bar" id="progressBar" style="width: 0%"></div>
@@ -150,21 +160,43 @@
             @csrf
             <div class="p-4">
                 @foreach($questions as $item)
+                @php
+                    $isMultiple = $item->quiz && $item->quiz->isMultiple();
+                @endphp
                 <div class="question-card d-flex">
                     <div class="question-number flex-shrink-0">
                         {{ $loop->iteration }}
                     </div>
                     <div class="flex-grow-1">
-                        <h5 class="mb-4 fw-bold">{{ $item->quiz->quiz }}</h5>
-                        <div class="options">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h5 class="mb-0 fw-bold">{{ $item->quiz->quiz }}</h5>
+                        </div>
+
+                        @if($isMultiple)
+                            <div class="mb-3 mt-2">
+                                <span class="badge-multiple">
+                                    <i class="fas fa-check-double me-1"></i> Bir nechta to‘g‘ri javobni belgilang
+                                </span>
+                            </div>
+                        @endif
+
+                        <div class="options mt-3">
                             @foreach([$item->quiz->option1, $item->quiz->option2, $item->quiz->option3, $item->quiz->option4] as $index => $option)
-                                @if($option)
+                                @if(!empty($option))
                                 <label class="option-label">
-                                    <input type="radio" 
-                                           name="answer_{{ $item->id }}" 
-                                           value="{{ $option }}" 
-                                           required>
-                                    <span class="ms-2">{{ chr(65 + $index) }}. {{ $option }}</span>
+                                    @if($isMultiple)
+                                        <input type="checkbox" 
+                                               name="answer_{{ $item->id }}[]" 
+                                               value="{{ $option }}"
+                                               class="form-check-input answer-input">
+                                    @else
+                                        <input type="radio" 
+                                               name="answer_{{ $item->id }}" 
+                                               value="{{ $option }}" 
+                                               class="form-check-input answer-input">
+                                    @endif
+                                    <span class="ms-2 fw-semibold">{{ chr(65 + $index) }}.</span>
+                                    <span class="ms-1">{{ $option }}</span>
                                 </label>
                                 @endif
                             @endforeach
@@ -175,7 +207,7 @@
 
                 <div class="text-center mt-5">
                     <button type="submit" class="btn btn-finish">
-                        Testni yakunlash
+                        Testni yakunlash <i class="fas fa-paper-plane ms-2"></i>
                     </button>
                 </div>
             </div>
@@ -183,24 +215,18 @@
     </div>
 </div>
 
-
-
 <script>
-
-
-
     // PHP dan kelgan vaqt (soniyalarda)
-let totalTime = Math.floor({{ $remainingSeconds }});  // PHP → JS butun son
-let remaining = totalTime;
+    let totalTime = Math.floor({{ $remainingSeconds }});
+    let remaining = totalTime;
 
-function formatTime(seconds) {
-    seconds = Math.max(0, Math.floor(seconds)); // float emas → int, manfiy bo‘lmasin
+    function formatTime(seconds) {
+        seconds = Math.max(0, Math.floor(seconds));
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
 
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-
-    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-}
     function startTimer() {
         const timer = document.getElementById('countdown');
         timer.textContent = formatTime(remaining);
@@ -210,6 +236,7 @@ function formatTime(seconds) {
 
             if (remaining <= 0) {
                 clearInterval(interval);
+                document.getElementById('testForm').submit();
             }
 
             timer.textContent = formatTime(remaining);
@@ -218,18 +245,24 @@ function formatTime(seconds) {
 
     startTimer();
 
+    // Savol javoblarini hisoblash (progress bar uchun)
+    const progressBar = document.getElementById('progressBar');
+    const questionCards = document.querySelectorAll('.question-card');
 
+    function updateProgressBar() {
+        let answeredCount = 0;
+        questionCards.forEach(card => {
+            if (card.querySelector('input:checked')) {
+                answeredCount++;
+            }
+        });
+        const percent = questionCards.length > 0 ? (answeredCount / questionCards.length) * 100 : 0;
+        progressBar.style.width = percent + '%';
+    }
 
-
-
-// Savol javoblarini hisoblash (progress bar uchun)
-document.querySelectorAll('input[type="radio"]').forEach(radio => {
-    radio.addEventListener('change', () => {
-        const answered = document.querySelectorAll('input[type="radio"]:checked').length;
-        const questionProgress = (answered / totalQuestions) * 100;
-        progressBar.style.width = Math.max(progressBar.style.width.replace('%',''), questionProgress) + '%';
+    document.querySelectorAll('.answer-input').forEach(input => {
+        input.addEventListener('change', updateProgressBar);
     });
-});
 </script>
 </body>
 </html>
