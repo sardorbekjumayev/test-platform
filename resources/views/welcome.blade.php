@@ -267,8 +267,8 @@
                 </div>
 
                 <h1 class="hero-title">
-                    Olis hudud maktablari uchun <br>
-                    <span class="gradient-text">Yagona Ta'lim va Sinov</span> Platformasi
+                    Tabiiy-ilmiy savodxonlik ko'nikmalarini <br>
+                    <span class="gradient-text">raqamli texnologiyalar</span> yordamida rivojlantirish
                 </h1>
 
                 <p class="hero-subtitle">
